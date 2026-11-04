@@ -3,19 +3,6 @@
 
 ---
 
-## 👥 Team Members
-| Name | Role |
-|---|---|
-| Sri Ramya Teeda | Database Design & SQL Queries |
-| Vaishnavi Gjalla | Backend API (Node.js) |
-| Vibhor Vyas | Frontend UI (React) |
-| Vishnu Urella | Integration & Testing |
-| Mudit Bagra | Documentation & Viva Prep |
-
-**Submitted to:** Ms. Supriya Mishra
-
----
-
 ## 🗂️ Project Structure
 ```
 cafeteria_management_system/
