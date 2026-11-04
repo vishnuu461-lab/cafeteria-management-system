@@ -1,0 +1,113 @@
+--- PAGE 1 ---
+DATABASE MANAGEMENT SYSTEM
+Project Report
+On
+Cafeteria Management System
+Submitted to : Submitted by :
+1. SRI RAMYA TEEDA [2025btech236]
+Ms. Supriya Mishra
+2. VAISHNAVI GJALLA [2025btech303]
+3. VIBHOR VYAS [2025btech239]
+4. VISHNU URELLA [2025btech238]
+5. MUDIT BAGRA [2025btech346]
+
+--- PAGE 2 ---
+Problem statement:
+The cafeteria needs a centralized relational database for managing cafeterias, counters,
+customers, employees, menu items, orders, payments, recipes, ingredients, suppliers, offers,
+and feedback. The system should keep cafeteria records organized, maintain accurate order
+and payment information, track ingredient stock, and help staff access reliable operational
+information.
+1. Introduction to the Project Domain
+A campus cafeteria handles a large number of food orders in a short period. The same menu
+item may be sold many times during a day, while ingredient stock changes continuously
+through purchases, consumption, waste, and returns.
+Managing these activities requires maintaining customer records, cafeteria and counter
+information, menu categories, menu items, recipes, inventory items, suppliers, orders,
+payments, offers, and feedback. When these records are maintained manually or in separate
+spreadsheets, information can become scattered and difficult to update.
+The Cafeteria Management System is a proposed relational database solution that brings
+these activities together. It uses structured tables and relationships so that orders, payments,
+menu information, and inventory records can be maintained consistently.
+2. Need for the Project and Problem Statement
+Without a centralized cafeteria database, common operational problems include:
+ Incorrect or inconsistent billing information
+ Ordering menu items that are not available
+ Untracked ingredient consumption and stock changes
+ Low-stock items being missed during operations
+ Incorrect application of discounts or offers
+ Missing or inconsistent payment records
+ Difficulty producing daily sales and inventory reports
+3. Objectives
+The objectives of the project are to:
+1. Maintain records for customers, cafeterias, counters, and employees.
+2. Maintain menu categories and menu items with price, tax, preparation time, and
+availability.
+3. Create multi-item orders and keep order totals consistent.
+4. Connect menu items with required ingredients through recipe records.
+5. Track supplier receipts, ingredient consumption, waste, and returns.
+6. Prevent order confirmation when required inventory is insufficient.
+7. Record payments that match the final order amount.
+8. Apply valid offers according to their defined conditions.
+9. Provide organized information for sales, inventory, supplier, and customer reports.
+10. Keep the project based on structured relational data.
+
+--- PAGE 3 ---
+11. Maintain accurate and timely access to cafeteria information.
+4. Scope
+Included in the proposed system
+ Customer and employee information management
+ Cafeteria and counter management
+ Menu category and menu item management
+ Order and order-item records
+ Payment records and order totals
+ Recipe and ingredient requirements
+ Inventory, supplier, stock purchase, consumption, waste, and return records
+ Offers and order-level discounts
+ Customer feedback associated with completed orders
+Users of the system:
+• Customers: place orders and provide feedback for completed orders.
+• Cafeteria staff: manage counters, orders, payments, menu availability, and inventory
+operations according to their responsibilities.
+• Cafeteria managers: oversee cafeteria operations, reports, offers, suppliers, and inventory
+records.
+5. Project Completion Steps:
+1. Gather requirements: Identify the information and operations needed for customers,
+cafeteria staff, and management. Decide which cafeteria activities belong in the project.
+2. Analyze the requirements: Define the system data, business rules, relationships, and
+access responsibilities.
+3. Design the system: Prepare the ER diagram, relational database structure, process flow,
+and table relationships.
+4. Choose the technology: Select MySQL, MySQL Workbench, ERDPlus/diagrams.net,
+SQL, and supporting documentation tools.
+5. Create the database: Build relational tables for cafeterias, counters, customers,
+employees, menu items, orders, payments, recipes, inventory, suppliers, offers, and
+feedback.
+6. Develop the database operations: Implement SQL statements for inserting, updating,
+retrieving, and reporting cafeteria information.
+7. Verify the system: Check order processing, payment validation, inventory rules, offer
+conditions, feedback rules, and record relationships.
+8. Prepare documentation: Document the problem, objectives, scope, database design,
+tools, and expected outcomes.
+9. Present the project: Demonstrate the basic cafeteria workflow and explain the
+relational design and project outcomes.
+6. Description of Tools Used
+
+--- PAGE 4 ---
+The tools used for the proposed project are listed below.
+Tool Purpose
+MySQL 8.0.16+ Used to implement the cafeteria relational database, create tables,
+constraints, procedures, triggers, and SQL operations.
+MySQL Workbench Used for database development, SQL execution, table inspection,
+and database demonstration.
+ERDPlus / Used to design and present the Cafeteria Management System ER
+diagrams.net diagram and its entities, attributes, relationships, and cardinalities.
+SQL Used for DDL, DML, retrieval queries, reporting queries, and
+database rules.
+Microsoft Word / Used for preparing and formatting the project report.
+DOCX
+Graphviz Used to generate the project ER diagram and workflow diagram.
+Expected outcome: The Cafeteria Management System will provide a central place to
+organize cafeteria operations, helping staff maintain accurate menu, order, payment, recipe,
+inventory, supplier, offer, and feedback records through a structured relational database.
+

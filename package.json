@@ -1,0 +1,12 @@
+{
+    "name": "cafeteria-management-system",
+    "version": "1.0.0",
+    "description": "College Cafeteria Management System - CS1133 DBMS Project",
+    "scripts": {
+        "build": "cd frontend && npm install && npm run build",
+        "vercel-build": "cd frontend && npm install && npm run build",
+        "start": "cd backend && node server.js",
+        "dev:backend": "cd backend && npm start",
+        "dev:frontend": "cd frontend && npm run dev"
+    }
+}

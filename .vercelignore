@@ -1,0 +1,10 @@
+node_modules
+.env
+*.log
+database/schema_aiven.sql
+database/schema_cloud.sql
+database/sample_data_aiven.sql
+backend/test_db.js
+backend/setup_aiven.js
+backend/seed_aiven.js
+.git
