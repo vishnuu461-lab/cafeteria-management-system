@@ -45,12 +45,8 @@ export default function WorkerLogin({ onLogin, onBack }) {
                         </label>
                         <input
                             type="email" value={email} onChange={e => setEmail(e.target.value)}
-                            placeholder="worker1@gmail.com"
-                            style={{
-                                width: '100%', padding: '12px 14px', borderRadius: 10,
-                                border: '1.5px solid #e5e7eb', fontSize: 14, outline: 'none',
-                                boxSizing: 'border-box', fontFamily: 'inherit'
-                            }}
+                            placeholder="Enter your email"
+                            style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid #e5e7eb', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                         />
                     </div>
                     <div>
@@ -62,45 +58,23 @@ export default function WorkerLogin({ onLogin, onBack }) {
                                 type={showPw ? 'text' : 'password'} value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                style={{
-                                    width: '100%', padding: '12px 40px 12px 14px', borderRadius: 10,
-                                    border: '1.5px solid #e5e7eb', fontSize: 14, outline: 'none',
-                                    boxSizing: 'border-box', fontFamily: 'inherit'
-                                }}
+                                style={{ width: '100%', padding: '12px 40px 12px 14px', borderRadius: 10, border: '1.5px solid #e5e7eb', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                             />
                             <button type="button" onClick={() => setShowPw(p => !p)}
-                                style={{
-                                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 16
-                                }}>
+                                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16 }}>
                                 {showPw ? '🙈' : '👁️'}
                             </button>
                         </div>
                     </div>
 
                     <button type="submit" disabled={loading}
-                        style={{
-                            background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff',
-                            border: 'none', borderRadius: 12, padding: '14px', fontWeight: 700,
-                            fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer',
-                            opacity: loading ? 0.7 : 1, fontFamily: 'inherit', marginTop: 4
-                        }}>
+                        style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', borderRadius: 12, padding: '14px', fontWeight: 700, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, fontFamily: 'inherit', marginTop: 4 }}>
                         {loading ? '⏳ Signing in…' : '🔐 Sign In'}
                     </button>
                 </form>
 
-                <div style={{ marginTop: 20, background: '#f0fdf4', borderRadius: 10, padding: '10px 14px', fontSize: 12, color: '#166534' }}>
-                    <strong>Demo Accounts:</strong><br />
-                    worker1@gmail.com / 123456 (Counter)<br />
-                    worker2@gmail.com / 123456 (Counter)<br />
-                    inventory@gmail.com / 123456 (Inventory)
-                </div>
-
                 <button onClick={onBack}
-                    style={{
-                        marginTop: 16, background: 'none', border: 'none', color: '#6b7280',
-                        fontSize: 13, cursor: 'pointer', fontFamily: 'inherit'
-                    }}>
+                    style={{ marginTop: 20, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', display: 'block', width: '100%', textAlign: 'center' }}>
                     ← Back to Login Selection
                 </button>
             </div>

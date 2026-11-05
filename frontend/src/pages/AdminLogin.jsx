@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../student.css';
 
 export default function AdminLogin({ onLogin, onBack }) {
-    const [email, setEmail] = useState('vishnu461@gmail.com');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -32,17 +32,16 @@ export default function AdminLogin({ onLogin, onBack }) {
                 <h2 style={{ marginBottom: 20 }}>Sign In</h2>
 
                 {error && (
-                    <div style={{
-                        background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 10,
-                        padding: '10px 14px', color: '#dc2626', fontSize: 13, marginBottom: 16
-                    }}>{error}</div>
+                    <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 10, padding: '10px 14px', color: '#dc2626', fontSize: 13, marginBottom: 16 }}>
+                        {error}
+                    </div>
                 )}
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                     <div>
                         <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Admin Email</label>
                         <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                            placeholder="admin@email.com"
+                            placeholder="Enter admin email"
                             style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid #e5e7eb', fontSize: 14, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }} />
                     </div>
                     <div>
@@ -63,12 +62,8 @@ export default function AdminLogin({ onLogin, onBack }) {
                     </button>
                 </form>
 
-                <div style={{ marginTop: 20, background: '#eff6ff', borderRadius: 10, padding: '10px 14px', fontSize: 12, color: '#1e40af' }}>
-                    <strong>Demo Admin:</strong> vishnu461@gmail.com / 123456
-                </div>
-
                 {onBack && (
-                    <button onClick={onBack} style={{ marginTop: 16, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    <button onClick={onBack} style={{ marginTop: 20, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', display: 'block', width: '100%', textAlign: 'center' }}>
                         ← Back to Login Selection
                     </button>
                 )}

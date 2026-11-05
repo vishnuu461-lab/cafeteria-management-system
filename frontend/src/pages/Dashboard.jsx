@@ -50,7 +50,7 @@ export default function Dashboard() {
     if (loading) return (
         <div className="loader">
             <div className="spinner" />
-            <span style={{ marginLeft: 16, color: 'var(--text-muted)' }}>Loading dashboard data from MySQL…</span>
+            <span style={{ marginLeft: 16, color: 'var(--text-muted)' }}>Loading dashboard data…</span>
         </div>
     );
 
@@ -110,7 +110,6 @@ export default function Dashboard() {
                     <div className="card-header">
                         <div>
                             <div className="card-title">Revenue — Last 7 Days</div>
-                            <div className="card-subtitle">Daily total from ORDERS table</div>
                         </div>
                         <TrendingUp size={18} style={{ color: 'var(--primary)' }} />
                     </div>
@@ -163,7 +162,6 @@ export default function Dashboard() {
                     <div className="card-header">
                         <div>
                             <div className="card-title">Top 5 Menu Items</div>
-                            <div className="card-subtitle">By quantity sold via ORDER_ITEM JOIN</div>
                         </div>
                     </div>
                     <div className="chart-container">
@@ -186,7 +184,6 @@ export default function Dashboard() {
                     <div className="card-header">
                         <div>
                             <div className="card-title">Payment Methods</div>
-                            <div className="card-subtitle">Revenue by payment method from PAYMENT table</div>
                         </div>
                     </div>
                     <div className="chart-container">
@@ -210,7 +207,6 @@ export default function Dashboard() {
                 <div className="card-header">
                     <div>
                         <div className="card-title">Recent Orders</div>
-                        <div className="card-subtitle">Latest 8 orders — JOINed with CUSTOMER table</div>
                     </div>
                 </div>
                 <div className="table-wrapper" style={{ border: 'none' }}>
@@ -237,7 +233,7 @@ export default function Dashboard() {
                                 </tr>
                             ))}
                             {!recent.length && (
-                                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--text-muted)' }}>No orders today. Data from ORDERS table.</td></tr>
+                                <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--text-muted)' }}>No orders yet.</td></tr>
                             )}
                         </tbody>
                     </table>

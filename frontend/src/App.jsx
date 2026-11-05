@@ -30,13 +30,11 @@ const NAV = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/orders', icon: ShoppingBag, label: 'Orders' },
   { to: '/payments', icon: CreditCard, label: 'Payments' },
-  { to: '/menu', icon: UtensilsCrossed, label: 'Menu Items' },
   { to: '/categories', icon: Tag, label: 'Categories' },
   { to: '/customers', icon: Users, label: 'Customers' },
-  { to: '/management', icon: Building2, label: 'Cafeteria & Staff' },
+  { to: '/management', icon: Building2, label: 'Cafeteria Staff' },
   { to: '/inventory', icon: Package, label: 'Inventory' },
   { to: '/reports', icon: BarChart3, label: 'Reports' },
-  { to: '/offers', icon: Ticket, label: 'Offers' },
 ];
 
 // ── Admin Panel layout ──────────────────────────────────────────
@@ -51,11 +49,18 @@ function AdminPanel({ admin, onLogout }) {
       <aside className="sidebar" style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
         <div className="sidebar-brand">
           <div className="brand-logo">
-            <div className="brand-icon">☕</div>
+            <div className="brand-icon">
+              <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="40" height="40" rx="10" fill="#f97316" />
+                <path d="M10 28h20M12 28V18c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                <path d="M17 16v-2a3 3 0 016 0v2" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                <ellipse cx="20" cy="23" rx="4" ry="3" fill="white" opacity="0.3" />
+                <path d="M28 14c1.5 0 3 .8 3 2.5S29.5 19 28 19" stroke="white" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
             {!collapsed && (
               <div className="brand-text">
                 <h2>CaféMS</h2>
-                <span>IET JKLU · CS1133</span>
               </div>
             )}
           </div>
@@ -76,14 +81,7 @@ function AdminPanel({ admin, onLogout }) {
           ))}
         </nav>
 
-        {!collapsed && (
-          <div className="sidebar-footer">
-            <div className="sidebar-footer-info">
-              <div style={{ fontWeight: 600 }}>{admin?.Name || 'Admin'}</div>
-              <div style={{ marginTop: 2, fontSize: 11, opacity: 0.7 }}>CS1133 · DBMS · 2026</div>
-            </div>
-          </div>
-        )}
+
       </aside>
 
       <div className="main-content" style={{ marginLeft: sidebarWidth }}>
@@ -91,7 +89,6 @@ function AdminPanel({ admin, onLogout }) {
           <div className="topbar-left">
             <div>
               <div className="page-title">{current}</div>
-              <div className="page-subtitle">Cafeteria Management System</div>
             </div>
           </div>
           <div className="topbar-right">

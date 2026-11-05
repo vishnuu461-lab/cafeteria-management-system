@@ -74,8 +74,8 @@ export default function Management() {
         <div className="animate-fade">
             <div className="section-header">
                 <div>
-                    <div className="section-title">Cafeteria & Staff Management</div>
-                    <div className="section-subtitle">Tables: CAFETERIA, COUNTER, EMPLOYEE · {cafes.length} cafeterias · {employees.length} staff</div>
+                    <div className="section-title">Cafeteria Staff Management</div>
+                    <div className="section-subtitle">Main Cafeteria · 2 Counters · 3 Employees · 1 Inventory Staff</div>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     {tab === 'cafeteria' && <button className="btn btn-primary" onClick={() => { setCafeForm(cafeE); setSelected(null); setModal('cafe'); }}><Plus size={16} /> Add Cafeteria</button>}

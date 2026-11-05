@@ -2,6 +2,72 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import '../student.css';
 
+// ── Real Food Image Map (by item name keywords) ───────────────
+const FOOD_IMAGES = {
+    'masala dosa': 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=400&q=80',
+    'plain dosa': 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=400&q=80',
+    'idli': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&q=80',
+    'medu vada': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80',
+    'vada': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80',
+    'uttapam': 'https://images.unsplash.com/photo-1630409351241-e0c1f7e6e774?w=400&q=80',
+    'dal makhani': 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80',
+    'dal': 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80',
+    'paneer': 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=400&q=80',
+    'chole': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80',
+    'biryani': 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&q=80',
+    'fried rice': 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&q=80',
+    'noodles': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&q=80',
+    'chai': 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=400&q=80',
+    'tea': 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=400&q=80',
+    'coffee': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
+    'filter coffee': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
+    'lassi': 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&q=80',
+    'juice': 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&q=80',
+    'lemon': 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&q=80',
+    'samosa': 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80',
+    'aloo tikki': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80',
+    'tikki': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80',
+    'pav bhaji': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80',
+    'sandwich': 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&q=80',
+    'burger': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80',
+    'pizza': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80',
+    'maggi': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&q=80',
+    'gulab jamun': 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80',
+    'kheer': 'https://images.unsplash.com/photo-1590952700012-e4c62e7e248f?w=400&q=80',
+    'halwa': 'https://images.unsplash.com/photo-1590952700012-e4c62e7e248f?w=400&q=80',
+    'ice cream': 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&q=80',
+    'salad': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80',
+    'bowl': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80',
+    'combo': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&q=80',
+    'thali': 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80',
+    'poha': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&q=80',
+    'upma': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&q=80',
+    'paratha': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=80',
+    'roti': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=80',
+    'chapati': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=80',
+    'rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
+};
+
+const CAT_IMAGES = {
+    'South Indian': 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=400&q=80',
+    'North Indian': 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400&q=80',
+    'Beverages': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80',
+    'Snacks & Fast Food': 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80',
+    'Desserts': 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&q=80',
+    'Healthy Bowls': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80',
+    'Combo Meals': 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&q=80',
+    'Chinese': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&q=80',
+    'Pizza': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80',
+};
+
+function getFoodImage(itemName, categoryName) {
+    const name = (itemName || '').toLowerCase();
+    for (const [keyword, url] of Object.entries(FOOD_IMAGES)) {
+        if (name.includes(keyword)) return url;
+    }
+    return CAT_IMAGES[categoryName] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80';
+}
+
 const CAT_EMOJI = {
     'South Indian': '🥞', 'North Indian': '🍛', 'Beverages': '☕',
     'Snacks & Fast Food': '🍿', 'Desserts': '🍮', 'Healthy Bowls': '🥗',
@@ -29,7 +95,7 @@ async function downloadReceipt(order) {
     doc.setFontSize(18); doc.setFont('helvetica', 'bold');
     doc.text('☕ CaféMS', W / 2, 12, { align: 'center' });
     doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.text('IET · JK Lakshmipat University · Jaipur', W / 2, 19, { align: 'center' });
+    doc.text('Welcome to JKLU University Cafeteria', W / 2, 19, { align: 'center' });
     doc.text('FOOD ORDER RECEIPT', W / 2, 26, { align: 'center' });
 
     // Order ID box
@@ -429,8 +495,13 @@ export default function StudentApp({ customer, onLogout }) {
                                             return (
                                                 <div key={item.Menu_Item_ID} className={`s-food-card${!avail ? ' unavailable' : ''}`}>
                                                     {!avail && <div className="s-unavail-badge">Out of Stock</div>}
-                                                    <div className="s-food-img" style={{ background: catBg(item.Category_ID) }}>
-                                                        {catEmoji(item.Category_Name)}
+                                                    <div className="s-food-img" style={{ background: catBg(item.Category_ID), padding: 0, overflow: 'hidden' }}>
+                                                        <img
+                                                            src={getFoodImage(item.Item_Name, item.Category_Name)}
+                                                            alt={item.Item_Name}
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                                                            onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = `<span style="font-size:40px;display:flex;align-items:center;justify-content:center;height:100%">${catEmoji(item.Category_Name)}</span>`; }}
+                                                        />
                                                     </div>
                                                     <div className="s-food-info">
                                                         <div className="s-food-name">{item.Item_Name}</div>
@@ -479,7 +550,11 @@ export default function StudentApp({ customer, onLogout }) {
                                 <div className="s-cart-items">
                                     {cart.map(item => (
                                         <div key={item.Menu_Item_ID} className="s-cart-item">
-                                            <div className="s-ci-emoji" style={{ background: catBg(item.Category_ID) }}>{catEmoji(item.Category_Name)}</div>
+                                            <div className="s-ci-emoji" style={{ background: catBg(item.Category_ID), overflow: 'hidden', padding: 0 }}>
+                                                <img src={getFoodImage(item.Item_Name, item.Category_Name)} alt={item.Item_Name}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                    onError={e => { e.target.style.display = 'none'; e.target.parentNode.textContent = catEmoji(item.Category_Name); }} />
+                                            </div>
                                             <div className="s-ci-info">
                                                 <div className="s-ci-name">{item.Item_Name}</div>
                                                 <div className="s-ci-price">₹{parseFloat(item.Price).toFixed(2)} each</div>
