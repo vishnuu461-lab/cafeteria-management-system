@@ -4,8 +4,6 @@
     "description": "College Cafeteria Management System - CS1133 DBMS Project",
     "type": "commonjs",
     "scripts": {
-        "build": "npm install --prefix frontend && npm run build --prefix frontend",
-        "vercel-build": "npm install --prefix frontend && npm run build --prefix frontend",
         "start": "node backend/server.js"
     },
     "dependencies": {
