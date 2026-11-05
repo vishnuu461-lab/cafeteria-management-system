@@ -4,11 +4,9 @@
     "description": "College Cafeteria Management System - CS1133 DBMS Project",
     "type": "commonjs",
     "scripts": {
-        "build": "cd frontend && npm install && npm run build",
-        "vercel-build": "cd frontend && npm install && npm run build",
-        "start": "node backend/server.js",
-        "dev:backend": "cd backend && node server.js",
-        "dev:frontend": "cd frontend && npm run dev"
+        "build": "npm install --prefix frontend && npm run build --prefix frontend",
+        "vercel-build": "npm install --prefix frontend && npm run build --prefix frontend",
+        "start": "node backend/server.js"
     },
     "dependencies": {
         "cors": "^2.8.6",
