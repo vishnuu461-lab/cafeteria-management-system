@@ -21,6 +21,9 @@ import LoginSelection from './pages/LoginSelection';
 import AdminLogin from './pages/AdminLogin';
 import StudentLogin from './pages/StudentLogin';
 import StudentApp from './pages/StudentApp';
+import WorkerLogin from './pages/WorkerLogin';
+import CounterDashboard from './pages/CounterDashboard';
+import InventoryDashboard from './pages/InventoryDashboard';
 
 // ── Sidebar nav items ───────────────────────────────────────────
 const NAV = [
@@ -37,19 +40,15 @@ const NAV = [
 ];
 
 // ── Admin Panel layout ──────────────────────────────────────────
-function AdminPanel({ onLogout }) {
+function AdminPanel({ admin, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const current = NAV.find(n => location.pathname.startsWith(n.to))?.label || 'Dashboard';
-
   const sidebarWidth = collapsed ? '64px' : '260px';
 
   return (
     <div className="app-layout">
-      {/* ── Sidebar ── */}
       <aside className="sidebar" style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
-
-        {/* Brand */}
         <div className="sidebar-brand">
           <div className="brand-logo">
             <div className="brand-icon">☕</div>
@@ -62,39 +61,32 @@ function AdminPanel({ onLogout }) {
           </div>
         </div>
 
-        {/* Toggle */}
         <button onClick={() => setCollapsed(c => !c)}
           style={{ margin: '8px 12px', width: collapsed ? 40 : 'calc(100% - 24px)', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--bg-overlay)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-muted)', cursor: 'pointer' }}>
           {collapsed ? <Menu size={16} /> : <><X size={16} /><span style={{ fontSize: 12, fontWeight: 600 }}>Collapse</span></>}
         </button>
 
-        {/* Nav */}
         {!collapsed && <div className="nav-section-label" style={{ paddingLeft: 20 }}>NAVIGATION</div>}
         <nav className="sidebar-nav">
           {NAV.map(({ to, icon: Icon, label }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-              title={collapsed ? label : ''}>
+            <NavLink key={to} to={to} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} title={collapsed ? label : ''}>
               <Icon size={18} />
               {!collapsed && <span>{label}</span>}
             </NavLink>
           ))}
         </nav>
 
-        {/* Footer */}
         {!collapsed && (
           <div className="sidebar-footer">
             <div className="sidebar-footer-info">
-              <div>CS1133 · DBMS Project</div>
-              <div style={{ marginTop: 2 }}>IET · JKLU · 2026</div>
+              <div style={{ fontWeight: 600 }}>{admin?.Name || 'Admin'}</div>
+              <div style={{ marginTop: 2, fontSize: 11, opacity: 0.7 }}>CS1133 · DBMS · 2026</div>
             </div>
           </div>
         )}
       </aside>
 
-      {/* ── Main area ── */}
       <div className="main-content" style={{ marginLeft: sidebarWidth }}>
-
-        {/* Topbar */}
         <div className="topbar">
           <div className="topbar-left">
             <div>
@@ -104,15 +96,13 @@ function AdminPanel({ onLogout }) {
           </div>
           <div className="topbar-right">
             <button className="topbar-btn"><Bell size={18} /></button>
-            <button className="topbar-btn" onClick={onLogout} title="Logout"
-              style={{ color: 'var(--danger)' }}>
+            <button className="topbar-btn" onClick={onLogout} title="Logout" style={{ color: 'var(--danger)' }}>
               <LogOut size={18} />
             </button>
-            <div className="user-avatar">A</div>
+            <div className="user-avatar">{(admin?.Name || 'A').charAt(0).toUpperCase()}</div>
           </div>
         </div>
 
-        {/* Page content */}
         <div className="page-wrapper">
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -139,31 +129,43 @@ export default function App() {
   const [screen, setScreen] = useState('select');
   const [loading, setLoading] = useState(true);
 
-  // Restore session from localStorage
   useEffect(() => {
-    const admin = localStorage.getItem('admin');
-    const student = localStorage.getItem('student');
-    if (admin) setAuth({ role: 'admin' });
-    if (student) {
-      try { setAuth({ role: 'student', customer: JSON.parse(student) }); }
-      catch { localStorage.removeItem('student'); }
-    }
+    try {
+      const admin = localStorage.getItem('cafems_admin');
+      const student = localStorage.getItem('cafems_student');
+      const worker = localStorage.getItem('cafems_worker');
+      if (admin) setAuth({ role: 'admin', admin: JSON.parse(admin) });
+      if (student) setAuth({ role: 'student', customer: JSON.parse(student) });
+      if (worker) setAuth({ role: 'worker', worker: JSON.parse(worker) });
+    } catch { /* clear corrupt storage */ }
     setLoading(false);
   }, []);
 
-  function handleAdminSuccess() {
-    localStorage.setItem('admin', '1');
-    setAuth({ role: 'admin' });
-    toast.success('Welcome back, Admin! 👋');
+  function handleAdminLogin(admin) {
+    localStorage.setItem('cafems_admin', JSON.stringify(admin));
+    // clear old keys
+    localStorage.removeItem('admin');
+    setAuth({ role: 'admin', admin });
+    toast.success(`Welcome, ${admin.Name}! 👋`);
   }
 
   function handleStudentSuccess(customer) {
-    localStorage.setItem('student', JSON.stringify(customer));
+    localStorage.setItem('cafems_student', JSON.stringify(customer));
+    localStorage.removeItem('student');
     setAuth({ role: 'student', customer });
     toast.success(`Welcome, ${customer.Full_Name.split(' ')[0]}! 🎉`);
   }
 
+  function handleWorkerLogin(worker) {
+    localStorage.setItem('cafems_worker', JSON.stringify(worker));
+    setAuth({ role: 'worker', worker });
+    toast.success(`Welcome, ${worker.Name}!`);
+  }
+
   function handleLogout() {
+    localStorage.removeItem('cafems_admin');
+    localStorage.removeItem('cafems_student');
+    localStorage.removeItem('cafems_worker');
     localStorage.removeItem('admin');
     localStorage.removeItem('student');
     setAuth(null);
@@ -174,40 +176,50 @@ export default function App() {
   // Loading splash
   if (loading) return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f0f13', gap: 12 }}>
-      <div style={{ fontSize: 48, animation: 'none' }}>☕</div>
+      <div style={{ fontSize: 48 }}>☕</div>
       <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, fontFamily: 'Plus Jakarta Sans,sans-serif' }}>Loading CaféMS…</div>
     </div>
   );
 
-  // ── Student portal ──────────────────────────────────────────
-  if (auth?.role === 'student') {
+  // ── Student portal
+  if (auth?.role === 'student') return (
+    <>
+      <Toaster position="top-center" toastOptions={{ style: { fontSize: 13 } }} />
+      <StudentApp customer={auth.customer} onLogout={handleLogout} />
+    </>
+  );
+
+  // ── Worker portal — role-based routing
+  if (auth?.role === 'worker') {
+    const isCounter = auth.worker?.Role === 'counter';
+    const isInventory = auth.worker?.Role === 'inventory';
     return (
       <>
-        <Toaster position="top-center" toastOptions={{ style: { fontSize: 13 } }} />
-        <StudentApp customer={auth.customer} onLogout={handleLogout} />
+        <Toaster position="top-center" />
+        {isCounter && <CounterDashboard worker={auth.worker} onLogout={handleLogout} />}
+        {isInventory && <InventoryDashboard worker={auth.worker} onLogout={handleLogout} />}
       </>
     );
   }
 
-  // ── Admin portal ────────────────────────────────────────────
-  if (auth?.role === 'admin') {
-    return (
-      <>
-        <Toaster position="top-right" />
-        <BrowserRouter>
-          <AdminPanel onLogout={handleLogout} />
-        </BrowserRouter>
-      </>
-    );
-  }
+  // ── Admin portal
+  if (auth?.role === 'admin') return (
+    <>
+      <Toaster position="top-right" />
+      <BrowserRouter>
+        <AdminPanel admin={auth.admin} onLogout={handleLogout} />
+      </BrowserRouter>
+    </>
+  );
 
-  // ── Login screens ───────────────────────────────────────────
+  // ── Login screens
   return (
     <>
       <Toaster position="top-center" />
       {screen === 'select' && <LoginSelection onSelect={setScreen} />}
-      {screen === 'admin' && <AdminLogin onBack={() => setScreen('select')} onSuccess={handleAdminSuccess} />}
-      {screen === 'student' && <StudentLogin onBack={() => setScreen('select')} onSuccess={handleStudentSuccess} />}
+      {screen === 'admin' && <AdminLogin onLogin={handleAdminLogin} onBack={() => setScreen('select')} />}
+      {screen === 'student' && <StudentLogin onSuccess={handleStudentSuccess} onBack={() => setScreen('select')} />}
+      {screen === 'worker' && <WorkerLogin onLogin={handleWorkerLogin} onBack={() => setScreen('select')} />}
     </>
   );
 }

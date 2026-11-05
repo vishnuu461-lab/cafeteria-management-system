@@ -11,20 +11,29 @@ export default function LoginSelection({ onSelect }) {
             <div className="login-card">
                 <h2>Who are you?</h2>
 
-                <button className="role-btn admin" onClick={() => onSelect('admin')}>
-                    <div className="rb-icon">🛡️</div>
-                    <div className="rb-text">
-                        <div className="rb-title">Admin Login</div>
-                        <div className="rb-desc">Manage menu, orders & cafeteria</div>
-                    </div>
-                    <span className="rb-arrow">›</span>
-                </button>
-
                 <button className="role-btn student" onClick={() => onSelect('student')}>
                     <div className="rb-icon">🎓</div>
                     <div className="rb-text">
                         <div className="rb-title">Student Login</div>
-                        <div className="rb-desc">Browse menu & place orders</div>
+                        <div className="rb-desc">Browse menu &amp; place orders</div>
+                    </div>
+                    <span className="rb-arrow">›</span>
+                </button>
+
+                <button className="role-btn worker" onClick={() => onSelect('worker')}>
+                    <div className="rb-icon">👷</div>
+                    <div className="rb-text">
+                        <div className="rb-title">Worker Login</div>
+                        <div className="rb-desc">Counter &amp; inventory management</div>
+                    </div>
+                    <span className="rb-arrow">›</span>
+                </button>
+
+                <button className="role-btn admin" onClick={() => onSelect('admin')}>
+                    <div className="rb-icon">🛡️</div>
+                    <div className="rb-text">
+                        <div className="rb-title">Admin Login</div>
+                        <div className="rb-desc">Full dashboard &amp; settings</div>
                     </div>
                     <span className="rb-arrow">›</span>
                 </button>
