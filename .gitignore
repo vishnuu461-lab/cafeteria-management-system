@@ -10,3 +10,4 @@ backend/seed_aiven.js
 database/schema_aiven.sql
 database/schema_cloud.sql
 database/sample_data_aiven.sql
+.vercel
