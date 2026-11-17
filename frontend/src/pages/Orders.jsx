@@ -119,7 +119,7 @@ export default function Orders() {
             <div className="section-header">
                 <div>
                     <div className="section-title">Order Management</div>
-                    <div className="section-subtitle">MySQL Table: ORDERS JOIN CUSTOMER, CAFETERIA, COUNTER, EMPLOYEE · {total} records</div>
+                    <div className="section-subtitle">{total} orders total</div>
                 </div>
                 <button className="btn btn-primary" onClick={openNewOrder}><Plus size={16} /> New Order</button>
             </div>

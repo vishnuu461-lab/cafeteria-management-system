@@ -65,7 +65,7 @@ export default function Payments() {
             <div className="section-header">
                 <div>
                     <div className="section-title">Payment Management</div>
-                    <div className="section-subtitle">MySQL Table: PAYMENT JOIN ORDERS, CUSTOMER · {total} records</div>
+                    <div className="section-subtitle">{total} payment records</div>
                 </div>
                 <button className="btn btn-primary" onClick={() => setModal(true)}><Plus size={16} /> Record Payment</button>
             </div>

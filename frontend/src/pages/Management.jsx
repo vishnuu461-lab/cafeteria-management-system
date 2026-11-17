@@ -94,7 +94,7 @@ export default function Management() {
                 <>
                     {tab === 'cafeteria' && (
                         <div className="grid-2">
-                            {cafes.map(c => (
+                            {cafes.filter(c => c.Cafeteria_ID === 1).map(c => (
                                 <div key={c.Cafeteria_ID} className="card">
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                                         <div>

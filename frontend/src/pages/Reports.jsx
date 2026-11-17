@@ -57,7 +57,7 @@ export default function Reports() {
             <div className="section-header">
                 <div>
                     <div className="section-title">Reports & Analytics</div>
-                    <div className="section-subtitle">All data pulled live from MySQL using GROUP BY, JOIN, and Aggregate Functions</div>
+                    <div className="section-subtitle">Live analytics for Main Cafeteria</div>
                 </div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                     <input type="date" className="form-control" value={from} onChange={e => setFrom(e.target.value)} style={{ width: 150 }} />
@@ -67,11 +67,11 @@ export default function Reports() {
                 </div>
             </div>
 
-            {loading ? <div className="loader"><div className="spinner" /><span style={{ marginLeft: 12, color: 'var(--text-muted)' }}>Running SQL queries on MySQL…</span></div> : (
+            {loading ? <div className="loader"><div className="spinner" /><span style={{ marginLeft: 12, color: 'var(--text-muted)' }}>Loading reports…</span></div> : (
                 <>
                     {/* Row 1 */}
                     <div className="grid-2" style={{ marginBottom: 20 }}>
-                        <ChartCard title="Daily Revenue" subtitle={`${from} to ${to} · SELECT DATE, SUM(Total_Amount) GROUP BY DATE`}>
+                        <ChartCard title="Daily Revenue" subtitle={`${from} to ${to}`}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={daily}>
                                     <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
@@ -86,7 +86,7 @@ export default function Reports() {
                             </ResponsiveContainer>
                         </ChartCard>
 
-                        <ChartCard title="Top Menu Items" subtitle="SUM(Quantity) GROUP BY Menu_Item via ORDER_ITEM JOIN MENU_ITEM">
+                        <ChartCard title="Top Menu Items" subtitle="By quantity sold">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={topItems} layout="vertical">
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
@@ -103,7 +103,7 @@ export default function Reports() {
 
                     {/* Row 2 */}
                     <div className="grid-2" style={{ marginBottom: 20 }}>
-                        <ChartCard title="Category Revenue" subtitle="JOIN MENU_ITEM → CATEGORY, GROUP BY Category_Name">
+                        <ChartCard title="Category Revenue" subtitle="Revenue by food category">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={catSales} dataKey="revenue" nameKey="Category_Name" cx="50%" cy="50%"
@@ -116,7 +116,7 @@ export default function Reports() {
                             </ResponsiveContainer>
                         </ChartCard>
 
-                        <ChartCard title="Payment Methods" subtitle="COUNT(*), SUM(Amount) GROUP BY Payment_Method FROM PAYMENT">
+                        <ChartCard title="Payment Methods" subtitle="Breakdown by payment method">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={pay?.byMethod || []}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -174,7 +174,7 @@ export default function Reports() {
                     <div className="card">
                         <div className="card-header">
                             <div><div className="card-title">Customer Analysis</div>
-                                <div className="card-subtitle">CASE WHEN with COUNT and SUM — classifies customers into Regular/Occasional/New</div>
+                                <div className="card-subtitle">Classified by order frequency</div>
                             </div>
                         </div>
                         <div className="table-wrapper" style={{ border: 'none' }}>

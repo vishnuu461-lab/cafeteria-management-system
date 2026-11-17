@@ -79,7 +79,7 @@ export default function Inventory() {
             <div className="section-header">
                 <div>
                     <div className="section-title">Inventory Management</div>
-                    <div className="section-subtitle">INVENTORY_ITEM LEFT JOIN SUPPLIER · {total} items {lowCount > 0 && `· ⚠️ ${lowCount} low stock`}</div>
+                    <div className="section-subtitle">{total} items{lowCount > 0 ? ` · ⚠️ ${lowCount} low stock` : ''}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
                     <button className="btn btn-secondary" onClick={() => { setTForm(ETXN); setModal('txn') }}><Package size={15} /> Stock Transaction</button>
