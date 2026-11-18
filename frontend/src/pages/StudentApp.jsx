@@ -333,6 +333,157 @@ function OffersTab() {
     );
 }
 
+// ── Feedback Tab ──────────────────────────────────────────────
+function StarPicker({ value, onChange }) {
+    const [hover, setHover] = useState(0);
+    return (
+        <div style={{ display: 'flex', gap: 6, fontSize: 32, cursor: 'pointer', userSelect: 'none' }}>
+            {[1, 2, 3, 4, 5].map(n => (
+                <span key={n}
+                    style={{ color: n <= (hover || value) ? '#f59e0b' : '#d1d5db', transition: 'color 0.15s' }}
+                    onMouseEnter={() => setHover(n)}
+                    onMouseLeave={() => setHover(0)}
+                    onClick={() => onChange(n)}
+                >★</span>
+            ))}
+        </div>
+    );
+}
+
+function FeedbackTab({ customer }) {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [submitted, setSubmitted] = useState({});   // { [Order_ID]: true }
+    const [active, setActive] = useState(null);        // Order_ID being reviewed
+    const [form, setForm] = useState({ rating: 0, category: 'food_quality', comments: '' });
+    const [saving, setSaving] = useState(false);
+
+    const CAT_OPTIONS = [
+        { value: 'food_quality', label: '🍽️ Food Quality' },
+        { value: 'service', label: '👨‍🍳 Service' },
+        { value: 'cleanliness', label: '🧹 Cleanliness' },
+        { value: 'value_for_money', label: '💰 Value for Money' },
+        { value: 'overall', label: '⭐ Overall' },
+    ];
+
+    useEffect(() => {
+        axios.get(`/api/student/orders/${customer.Customer_ID}`)
+            .then(r => {
+                // only delivered orders
+                const delivered = r.data.filter(o => o.Order_Status === 'delivered');
+                setOrders(delivered);
+            })
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [customer.Customer_ID]);
+
+    async function handleSubmit(orderId) {
+        if (!form.rating) { alert('Please select a star rating!'); return; }
+        setSaving(true);
+        try {
+            await axios.post('/api/offers/feedback', {
+                Order_ID: orderId,
+                Customer_ID: customer.Customer_ID,
+                Rating: form.rating,
+                Feedback_Category: form.category,
+                Comments: form.comments.trim() || null,
+            });
+            setSubmitted(s => ({ ...s, [orderId]: true }));
+            setActive(null);
+            setForm({ rating: 0, category: 'food_quality', comments: '' });
+        } catch (e) {
+            const msg = e.response?.data?.error || 'Failed to submit feedback';
+            if (msg.includes('already')) {
+                setSubmitted(s => ({ ...s, [orderId]: true }));
+                setActive(null);
+            } else {
+                alert(msg);
+            }
+        } finally { setSaving(false); }
+    }
+
+    if (loading) return <div className="s-loading"><div className="s-spinner" /><p style={{ color: '#9ca3af', fontSize: 13 }}>Loading your orders…</p></div>;
+
+    if (!orders.length) return (
+        <div className="s-cart-empty">
+            <div className="ce-icon">⭐</div>
+            <h3>No delivered orders yet</h3>
+            <p>Once your orders are delivered, you can rate and review them here.</p>
+        </div>
+    );
+
+    return (
+        <div style={{ padding: '16px 16px 100px' }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e', marginBottom: 4 }}>⭐ Rate Your Orders</div>
+            <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 16 }}>Share your experience for each delivered order</div>
+
+            {orders.map(order => {
+                const done = submitted[order.Order_ID];
+                const isOpen = active === order.Order_ID;
+                return (
+                    <div key={order.Order_ID} style={{ background: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.07)', border: isOpen ? '2px solid #f97316' : '1.5px solid #f3e9de' }}>
+                        {/* Order Summary */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>Order #{order.Order_ID}</div>
+                                <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+                                    {new Date(order.Order_DateTime).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </div>
+                                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                                    {order.items?.map(it => `${it.Item_Name} ×${it.Quantity}`).join(', ')}
+                                </div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontWeight: 700, color: '#f97316', fontSize: 15 }}>₹{parseFloat(order.Total_Amount).toFixed(2)}</div>
+                                <div style={{ fontSize: 11, color: '#16a34a', marginTop: 2 }}>✓ Delivered</div>
+                            </div>
+                        </div>
+
+                        {done ? (
+                            <div style={{ background: '#f0fdf4', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#166534', fontWeight: 600, textAlign: 'center' }}>
+                                ✅ Feedback submitted — Thank you!
+                            </div>
+                        ) : isOpen ? (
+                            <div style={{ marginTop: 10 }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 8 }}>Your Rating</div>
+                                <StarPicker value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#374151', margin: '12px 0 6px' }}>Category</div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                                    {CAT_OPTIONS.map(opt => (
+                                        <button key={opt.value} onClick={() => setForm(f => ({ ...f, category: opt.value }))}
+                                            style={{ padding: '6px 12px', borderRadius: 20, border: `1.5px solid ${form.category === opt.value ? '#f97316' : '#e5e7eb'}`, background: form.category === opt.value ? '#fff7ed' : '#fff', color: form.category === opt.value ? '#ea580c' : '#6b7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                <textarea value={form.comments} onChange={e => setForm(f => ({ ...f, comments: e.target.value }))}
+                                    placeholder="Tell us about your experience (optional)…"
+                                    rows={3}
+                                    style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid #e5e7eb', fontSize: 13, fontFamily: 'inherit', resize: 'none', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }} />
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <button onClick={() => { setActive(null); setForm({ rating: 0, category: 'food_quality', comments: '' }); }}
+                                        style={{ flex: 1, padding: '11px', background: '#f3f4f6', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', color: '#6b7280' }}>
+                                        Cancel
+                                    </button>
+                                    <button onClick={() => handleSubmit(order.Order_ID)} disabled={saving || !form.rating}
+                                        style={{ flex: 2, padding: '11px', background: saving || !form.rating ? '#fed7aa' : 'linear-gradient(135deg,#f97316,#ea580c)', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 13, cursor: saving || !form.rating ? 'not-allowed' : 'pointer', color: '#fff', fontFamily: 'inherit' }}>
+                                        {saving ? '⏳ Submitting…' : '⭐ Submit Feedback'}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <button onClick={() => { setActive(order.Order_ID); setForm({ rating: 0, category: 'food_quality', comments: '' }); }}
+                                style={{ width: '100%', padding: '10px', background: 'linear-gradient(135deg,#fff7ed,#fef3c7)', border: '1.5px solid #fed7aa', borderRadius: 12, fontWeight: 700, fontSize: 13, color: '#ea580c', cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}>
+                                ⭐ Rate This Order
+                            </button>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
 // ── Main Student App ──────────────────────────────────────────
 export default function StudentApp({ customer, onLogout }) {
     const [tab, setTab] = useState('menu');
@@ -649,6 +800,9 @@ export default function StudentApp({ customer, onLogout }) {
 
                 {/* ══ OFFERS TAB ══ */}
                 {tab === 'offers' && <OffersTab />}
+
+                {/* ══ FEEDBACK TAB ══ */}
+                {tab === 'feedback' && <FeedbackTab customer={customer} />}
             </div>
 
             {/* Bottom Nav */}
@@ -658,6 +812,7 @@ export default function StudentApp({ customer, onLogout }) {
                     { key: 'cart', icon: '🛒', label: 'Cart' },
                     { key: 'orders', icon: '📋', label: 'Orders' },
                     { key: 'offers', icon: '🎁', label: 'Offers' },
+                    { key: 'feedback', icon: '⭐', label: 'Feedback' },
                 ].map(n => (
                     <button key={n.key} className={`s-nav-btn${tab === n.key ? ' active' : ''}`} onClick={() => setTab(n.key)}>
                         <div className="s-nav-icon">

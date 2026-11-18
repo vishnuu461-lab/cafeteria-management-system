@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ShoppingBag, CreditCard, UtensilsCrossed,
-  Tag, Users, Building2, Package, BarChart3, Ticket, Menu, X, Bell, LogOut
+  Tag, Users, Building2, Package, BarChart3, Ticket, Menu, X, Bell, LogOut, MessageSquare
 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -16,6 +16,7 @@ import Management from './pages/Management';
 import Inventory from './pages/Inventory';
 import Reports from './pages/Reports';
 import Offers from './pages/Offers';
+import FeedbackAdmin from './pages/FeedbackAdmin';
 
 import LoginSelection from './pages/LoginSelection';
 import AdminLogin from './pages/AdminLogin';
@@ -35,6 +36,7 @@ const NAV = [
   { to: '/management', icon: Building2, label: 'Cafeteria Staff' },
   { to: '/inventory', icon: Package, label: 'Inventory' },
   { to: '/reports', icon: BarChart3, label: 'Reports' },
+  { to: '/feedback', icon: MessageSquare, label: 'Feedback' },
 ];
 
 // ── Admin Panel layout ──────────────────────────────────────────
@@ -49,14 +51,8 @@ function AdminPanel({ admin, onLogout }) {
       <aside className="sidebar" style={{ width: sidebarWidth, minWidth: sidebarWidth }}>
         <div className="sidebar-brand">
           <div className="brand-logo">
-            <div className="brand-icon">
-              <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="40" height="40" rx="10" fill="#f97316" />
-                <path d="M10 28h20M12 28V18c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v10" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                <path d="M17 16v-2a3 3 0 016 0v2" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                <ellipse cx="20" cy="23" rx="4" ry="3" fill="white" opacity="0.3" />
-                <path d="M28 14c1.5 0 3 .8 3 2.5S29.5 19 28 19" stroke="white" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+            <div className="brand-icon" style={{ background: 'transparent', borderRadius: 10, overflow: 'hidden', width: 36, height: 36, flexShrink: 0 }}>
+              <img src="/cafems-logo.jpg" alt="CaféMS Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 10 }} />
             </div>
             {!collapsed && (
               <div className="brand-text">
@@ -112,6 +108,7 @@ function AdminPanel({ admin, onLogout }) {
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/offers" element={<Offers />} />
+            <Route path="/feedback" element={<FeedbackAdmin />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>
