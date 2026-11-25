@@ -473,17 +473,17 @@ export default function DbQueryLab() {
                 <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 8 }}>
                   {results[q.id].row_count} rows returned in {results[q.id].execution_ms}ms
                 </div>
-                <div style={{ overflowX: 'auto', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: 400, border: '1px solid var(--border)', borderRadius: 8 }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                     <thead>
-                      <tr style={{ background: 'var(--bg-overlay)' }}>
+                      <tr style={{ background: 'var(--bg-overlay)', position: 'sticky', top: 0, zIndex: 1 }}>
                         {results[q.id].columns.map(col => (
                           <th key={col} style={{ padding: '8px 14px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }}>{col}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {results[q.id].rows.slice(0, 20).map((row, ri) => (
+                      {results[q.id].rows.map((row, ri) => (
                         <tr key={ri} style={{ borderBottom: '1px solid var(--border)' }}>
                           {results[q.id].columns.map(col => (
                             <td key={col} style={{ padding: '8px 14px', color: 'var(--text-primary)', maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -494,9 +494,9 @@ export default function DbQueryLab() {
                       ))}
                     </tbody>
                   </table>
-                  {results[q.id].rows.length > 20 && (
+                  {results[q.id].rows.length > 50 && (
                     <div style={{ padding: '8px 14px', color: 'var(--text-muted)', fontSize: 12, borderTop: '1px solid var(--border)' }}>
-                      Showing 20 of {results[q.id].rows.length} rows
+                      Showing all {results[q.id].rows.length} rows — scroll to see more
                     </div>
                   )}
                 </div>
