@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, ShoppingBag, CreditCard, UtensilsCrossed,
-  Tag, Users, Building2, Package, BarChart3, Ticket, Menu, X, Bell, LogOut, MessageSquare
+  Tag, Users, Building2, Package, BarChart3, Ticket, Menu, X, Bell, LogOut, MessageSquare,
+  Database, Table2, FlaskConical, Terminal, Compass, GitBranch, ScrollText
 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -17,6 +18,12 @@ import Inventory from './pages/Inventory';
 import Reports from './pages/Reports';
 import Offers from './pages/Offers';
 import FeedbackAdmin from './pages/FeedbackAdmin';
+import DbTableBrowser from './pages/DbTableBrowser';
+import DbQueryLab from './pages/DbQueryLab';
+import DbSQLConsole from './pages/DbSQLConsole';
+import DbSchemaExplorer from './pages/DbSchemaExplorer';
+import DbERDiagram from './pages/DbERDiagram';
+import DbAuditLog from './pages/DbAuditLog';
 
 import LoginSelection from './pages/LoginSelection';
 import AdminLogin from './pages/AdminLogin';
@@ -39,11 +46,20 @@ const NAV = [
   { to: '/feedback', icon: MessageSquare, label: 'Feedback' },
 ];
 
+const DB_NAV = [
+  { to: '/db/tables',   icon: Table2,       label: 'Table Browser' },
+  { to: '/db/querylab', icon: FlaskConical,  label: 'Query Lab' },
+  { to: '/db/console',  icon: Terminal,      label: 'SQL Console' },
+  { to: '/db/schema',   icon: Compass,       label: 'Schema Explorer' },
+  { to: '/db/er',       icon: GitBranch,     label: 'ER Diagram' },
+  { to: '/db/audit',    icon: ScrollText,    label: 'Audit Log' },
+];
+
 // ── Admin Panel layout ──────────────────────────────────────────
 function AdminPanel({ admin, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const current = NAV.find(n => location.pathname.startsWith(n.to))?.label || 'Dashboard';
+  const current = [...NAV, ...DB_NAV].find(n => location.pathname.startsWith(n.to))?.label || 'Dashboard';
   const sidebarWidth = collapsed ? '64px' : '260px';
 
   return (
@@ -70,6 +86,22 @@ function AdminPanel({ admin, onLogout }) {
         {!collapsed && <div className="nav-section-label" style={{ paddingLeft: 20 }}>NAVIGATION</div>}
         <nav className="sidebar-nav">
           {NAV.map(({ to, icon: Icon, label }) => (
+            <NavLink key={to} to={to} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} title={collapsed ? label : ''}>
+              <Icon size={18} />
+              {!collapsed && <span>{label}</span>}
+            </NavLink>
+          ))}
+
+          {/* DATABASE section */}
+          {!collapsed && (
+            <div className="nav-section-label" style={{ paddingLeft: 20, marginTop: 16 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Database size={12} /> DATABASE
+              </span>
+            </div>
+          )}
+          {collapsed && <div style={{ margin: '12px auto', width: 24, height: 1, background: 'var(--border)' }} />}
+          {DB_NAV.map(({ to, icon: Icon, label }) => (
             <NavLink key={to} to={to} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`} title={collapsed ? label : ''}>
               <Icon size={18} />
               {!collapsed && <span>{label}</span>}
@@ -109,6 +141,12 @@ function AdminPanel({ admin, onLogout }) {
             <Route path="/reports" element={<Reports />} />
             <Route path="/offers" element={<Offers />} />
             <Route path="/feedback" element={<FeedbackAdmin />} />
+            <Route path="/db/tables"   element={<DbTableBrowser />} />
+            <Route path="/db/querylab" element={<DbQueryLab />} />
+            <Route path="/db/console"  element={<DbSQLConsole />} />
+            <Route path="/db/schema"   element={<DbSchemaExplorer />} />
+            <Route path="/db/er"       element={<DbERDiagram />} />
+            <Route path="/db/audit"    element={<DbAuditLog />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>

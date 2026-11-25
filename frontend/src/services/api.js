@@ -89,4 +89,13 @@ export const getLowStock = () => api.get('/reports/low-stock').then(r => r.data)
 export const getFeedbackAnalysis = () => api.get('/reports/feedback-analysis').then(r => r.data);
 export const getPaymentAnalysis = () => api.get('/reports/payment-analysis').then(r => r.data);
 
+// DB Manager
+export const getDbTables = () => api.get('/dbmanager/tables').then(r => r.data);
+export const getDbTableData = (name, params) => api.get(`/dbmanager/tables/${name}`, { params }).then(r => r.data);
+export const runDbQuery = (sql) => api.post('/dbmanager/query', { sql }).then(r => r.data);
+export const getDbSchema = () => api.get('/dbmanager/schema').then(r => r.data);
+export const getAuditLog = (params) => api.get('/dbmanager/audit', { params }).then(r => r.data);
+export const postAuditLog = (data) => api.post('/dbmanager/audit', data).then(r => r.data);
+
 export default api;
+
