@@ -5,6 +5,13 @@ const db = require('../config/db');
 // ── Use explicit DB name from env (never rely on DATABASE() context) ──
 const DB_NAME = process.env.DB_NAME || 'defaultdb';
 
+// ── Normalize table name: lowercase for actual queries, preserve original for metadata ──
+// Aiven MySQL (Linux) has case-sensitive table names. All CaféMS tables are lowercase.
+// INFORMATION_SCHEMA may return uppercase names. Normalize to lowercase for data queries.
+function safeTableName(name) {
+    return name.toLowerCase();
+}
+
 // ── Create audit_log table on startup ────────────────────────────
 (async () => {
     try {
@@ -77,7 +84,7 @@ router.get('/tables', async (req, res) => {
             GROUP BY TABLE_NAME
         `, [DB_NAME]);
         const colCountMap = {};
-        colCounts.forEach(r => { colCountMap[r.table_name] = r.column_count; });
+        colCounts.forEach(r => { colCountMap[safeTableName(r.table_name)] = r.column_count; });
 
         // 3. Get PK columns per table
         const [pks] = await db.query(`
@@ -88,8 +95,9 @@ router.get('/tables', async (req, res) => {
         `, [DB_NAME]);
         const pkMap = {};
         pks.forEach(r => {
-            if (!pkMap[r.table_name]) pkMap[r.table_name] = [];
-            pkMap[r.table_name].push(r.pk_column);
+            const key = safeTableName(r.table_name);
+            if (!pkMap[key]) pkMap[key] = [];
+            pkMap[key].push(r.pk_column);
         });
 
         // 4. Get FK counts per table
@@ -100,7 +108,7 @@ router.get('/tables', async (req, res) => {
             GROUP BY TABLE_NAME
         `, [DB_NAME]);
         const fkMap = {};
-        fks.forEach(r => { fkMap[r.table_name] = r.fk_count; });
+        fks.forEach(r => { fkMap[safeTableName(r.table_name)] = r.fk_count; });
 
         // 5. Get accurate row counts using a SINGLE connection in sequence
         //    (avoids exhausting the pool with 35 parallel queries)
@@ -109,8 +117,10 @@ router.get('/tables', async (req, res) => {
 
         for (const tn of tableNames) {
             try {
+                // Always use lowercase name for actual data queries (Aiven MySQL is case-sensitive)
+                const ltn = safeTableName(tn);
                 const [[rc]] = await db.query(
-                    `SELECT COUNT(*) AS cnt FROM \`${DB_NAME}\`.\`${tn}\``
+                    `SELECT COUNT(*) AS cnt FROM \`${ltn}\``
                 );
                 rowCounts[tn] = Number(rc.cnt);
             } catch (e) {
@@ -120,11 +130,11 @@ router.get('/tables', async (req, res) => {
         }
 
         const result = tableNames.map(tn => ({
-            name: tn,
+            name: safeTableName(tn),   // return lowercase name so frontend passes it back correctly
             rows: rowCounts[tn] ?? 0,
-            columns: colCountMap[tn] || 0,
-            pk: pkMap[tn] || [],
-            fk_count: fkMap[tn] || 0,
+            columns: colCountMap[safeTableName(tn)] || 0,
+            pk: pkMap[safeTableName(tn)] || [],
+            fk_count: fkMap[safeTableName(tn)] || 0,
         }));
 
         await logAudit('TABLE_LIST_VIEW', null, `Viewed ${result.length} tables`, 'admin');
@@ -146,6 +156,10 @@ router.get('/tables/:name', async (req, res) => {
         return res.status(400).json({ error: 'Invalid table name' });
     }
 
+    // Normalize to lowercase — Aiven MySQL (Linux) is case-sensitive;
+    // all CaféMS tables are lowercase. INFORMATION_SCHEMA may return uppercase.
+    const tableName = safeTableName(name);
+
     const page  = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, parseInt(req.query.limit) || 20);
     const offset = (page - 1) * limit;
@@ -154,24 +168,24 @@ router.get('/tables/:name', async (req, res) => {
     const sortDir = req.query.dir === 'desc' ? 'DESC' : 'ASC';
 
     try {
-        // 1. Verify table exists in this specific database
+        // 1. Verify table exists (case-insensitive check via INFORMATION_SCHEMA)
         const [[tableCheck]] = await db.query(
             `SELECT COUNT(*) AS cnt
              FROM INFORMATION_SCHEMA.TABLES
-             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?`,
-            [DB_NAME, name]
+             WHERE TABLE_SCHEMA = ? AND LOWER(TABLE_NAME) = ?`,
+            [DB_NAME, tableName]
         );
         if (!tableCheck.cnt) {
-            return res.status(404).json({ error: `Table '${name}' not found in database '${DB_NAME}'` });
+            return res.status(404).json({ error: `Table '${tableName}' not found in database '${DB_NAME}'` });
         }
 
-        // 2. Get columns (always use explicit schema)
+        // 2. Get columns (use LOWER() match for safety)
         const [cols] = await db.query(
             `SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
              FROM INFORMATION_SCHEMA.COLUMNS
-             WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?
+             WHERE TABLE_SCHEMA = ? AND LOWER(TABLE_NAME) = ?
              ORDER BY ORDINAL_POSITION`,
-            [DB_NAME, name]
+            [DB_NAME, tableName]
         );
 
         const columnNames = cols.map(c => c.COLUMN_NAME);
@@ -191,21 +205,22 @@ router.get('/tables/:name', async (req, res) => {
             orderClause = `ORDER BY \`${sortCol}\` ${sortDir}`;
         }
 
-        // 5. Count — always qualify with explicit schema.table
+        // 5. Count — use lowercase table name, no explicit schema prefix
+        //    (matches how all other existing routes work successfully)
         const [[{ total }]] = await db.query(
-            `SELECT COUNT(*) AS total FROM \`${DB_NAME}\`.\`${name}\` ${where}`,
+            `SELECT COUNT(*) AS total FROM \`${tableName}\` ${where}`,
             params
         );
 
-        // 6. Data — always qualify with explicit schema.table
+        // 6. Data — use lowercase table name, no explicit schema prefix
         const [rows] = await db.query(
-            `SELECT * FROM \`${DB_NAME}\`.\`${name}\` ${where} ${orderClause} LIMIT ? OFFSET ?`,
+            `SELECT * FROM \`${tableName}\` ${where} ${orderClause} LIMIT ? OFFSET ?`,
             [...params, limit, offset]
         );
 
-        await logAudit('TABLE_VIEW', name, `Page ${page}, search="${search}"`, 'admin');
+        await logAudit('TABLE_VIEW', tableName, `Page ${page}, search="${search}"`, 'admin');
         res.json({
-            table: name,
+            table: tableName,
             columns: cols,
             rows,
             total: Number(total),
@@ -214,7 +229,7 @@ router.get('/tables/:name', async (req, res) => {
             pages: Math.ceil(Number(total) / limit),
         });
     } catch (err) {
-        console.error(`dbmanager/table [${name}] error:`, err.message);
+        console.error(`dbmanager/table [${tableName}] error:`, err.message);
         res.status(500).json({ error: err.message });
     }
 });
